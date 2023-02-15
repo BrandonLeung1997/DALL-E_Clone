@@ -15,7 +15,30 @@ const CreatePost = () => {
   const [generateImg, setGenerateImg] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const generateImage = () => {};
+  const generateImage = async () => {
+    if (form.prompt) {
+      try {
+        setGenerateImg(true);
+        const response = await fetch("http://localhost:8080/api/v1/dalle", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ prompt: form.prompt }),
+        });
+
+        const data = await response.json();
+
+        setForm({ ...form, photo: `data:image/jpeg;base64,${data.photo}` });
+      } catch (error) {
+        alert(error);
+      } finally {
+        setGenerateImg(false);
+      }
+    } else {
+      alert("Please enter a prompt");
+    }
+  };
 
   const handleSubmit = () => {};
 
@@ -45,7 +68,7 @@ const CreatePost = () => {
             type="text"
             name="name"
             placeholder="John Doe"
-            value={form.value}
+            value={form.name}
             handleChange={handleChange}
           />
           <FormField
@@ -53,7 +76,7 @@ const CreatePost = () => {
             type="text"
             name="prompt"
             placeholder="a painting of a fox in the style of Starry Nighte"
-            value={form.value}
+            value={form.prompt}
             handleChange={handleChange}
             isSurpriseMe
             handleSurpriseMe={handleSurpriseMe}
